@@ -50,6 +50,8 @@ import org.apache.ibatis.io.Resources;
 /**
  * @author Clinton Begin
  * @author Kazuki Shimizu
+ *
+ * 类型处理器注册表，内部维护了所有类型与对应类型处理器的映射关系。
  */
 public final class TypeHandlerRegistry {
 

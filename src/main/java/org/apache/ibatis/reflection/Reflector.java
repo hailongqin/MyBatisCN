@@ -44,6 +44,8 @@ import org.apache.ibatis.reflection.property.PropertyNamer;
  * allows for easy mapping between property names and getter/setter methods.
  *
  * @author Clinton Begin
+ * reflection包中最为核心的类就是Reflector类。Reflector类负责对一个类进行反射解析，并将解析后的结果在属性中存储起来。
+ *
  */
 public class Reflector {
 

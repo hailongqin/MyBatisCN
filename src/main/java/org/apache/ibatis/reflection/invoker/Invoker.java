@@ -19,10 +19,24 @@ import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author Clinton Begin
+ * invoker包是执行器字包，该子包中的类能够基于反射实现对象方法的调用和对象属性的读写。
  */
 public interface Invoker {
-  // 方法执行调用器
+
+  /**
+   * 方法执行调用器
+   * @param target
+   * @param args
+   * @return
+   * @throws IllegalAccessException
+   * @throws InvocationTargetException
+   */
   Object invoke(Object target, Object[] args) throws IllegalAccessException, InvocationTargetException;
-  // 传入参数或者传出参数的类型（如有一个入参就是入参，否则是出参）
+
+  /**
+   * 传入参数或者传出参数的类型（如有一个入参就是入参，否则是出参）
+   * @return
+   */
   Class<?> getType();
+
 }

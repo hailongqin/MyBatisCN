@@ -17,6 +17,7 @@ package org.apache.ibatis.reflection;
 
 /**
  * 工厂接口
+ * 是Reflector的工厂接口
  */
 public interface ReflectorFactory {
 

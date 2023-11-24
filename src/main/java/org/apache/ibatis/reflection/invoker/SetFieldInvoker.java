@@ -21,6 +21,7 @@ import org.apache.ibatis.reflection.Reflector;
 
 /**
  * @author Clinton Begin
+ * 对象属性的写操作
  */
 public class SetFieldInvoker implements Invoker {
   // 要操作的属性

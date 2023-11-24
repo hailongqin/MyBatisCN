@@ -30,6 +30,7 @@ import org.apache.ibatis.session.Configuration;
  * {@link CallableStatement#wasNull()} method for handling the SQL {@code NULL} value.
  * In other words, {@code null} value handling should be performed on subclass.
  * </p>
+ * 类型处理器的基础实现
  *
  * @author Clinton Begin
  * @author Simone Tripodi

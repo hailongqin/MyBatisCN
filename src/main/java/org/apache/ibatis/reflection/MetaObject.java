@@ -29,6 +29,9 @@ import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 
 /**
  * @author Clinton Begin
+ *
+ * MetaObject类中涵盖了对应 Object类中的全部信息，并经过变化和拆解得到了一些更为细节的信息。
+ * 因此，可以将MetaObject类理解为一个涵盖对象（Object）中更多细节信息和功能的类，称为“元对象”。
  */
 public class MetaObject {
   // 原始对象

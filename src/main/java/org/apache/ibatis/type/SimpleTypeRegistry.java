@@ -23,6 +23,8 @@ import java.util.Set;
 
 /**
  * @author Clinton Begin
+ *
+ * 基本类型注册表，内部使用 Set 维护了所有 Java 基本数据类型的集合；
  */
 public class SimpleTypeRegistry {
 

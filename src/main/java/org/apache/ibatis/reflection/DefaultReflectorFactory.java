@@ -20,6 +20,8 @@ import java.util.concurrent.ConcurrentMap;
 
 /**
  * 工厂接口的默认实现
+ * ReflectorFactory是Reflector的工厂接口，而DefaultReflectorFactory是该工厂接口的默认实现。
+ * DefaultReflectorFactory中核心的方法是用来生成一个类的Reflector对象。因反射效率比较低DefaultReflectorFactory中还加入了缓存来提高效率
  */
 public class DefaultReflectorFactory implements ReflectorFactory {
   private boolean classCacheEnabled = true;

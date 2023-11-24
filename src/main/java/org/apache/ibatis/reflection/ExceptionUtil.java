@@ -20,6 +20,8 @@ import java.lang.reflect.UndeclaredThrowableException;
 
 /**
  * @author Clinton Begin
+ * ExceptionUtil 是一个异常工具类，它提供一个拆包异常的工具方法 unwrapThrowable。该方法将InvocationTargetException
+ * 和UndeclaredThrowableException 这两类异常进行拆包，得到其中包含的真正的异常。
  */
 public class ExceptionUtil {
 

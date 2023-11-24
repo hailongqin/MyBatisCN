@@ -28,6 +28,9 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
+/**
+ * 参数名称解析器
+ */
 public class ParamNameResolver {
 
   private static final String GENERIC_NAME_PREFIX = "param";
@@ -55,6 +58,9 @@ public class ParamNameResolver {
 
   /**
    * 参数名解析器的构造方法
+   * 构造方法 ParamNameResolver能够将目标方法的参数名称依次列举出来。最终生成方法入参的参数次序表。
+   * 在列举的过程中，如果某个参数存在@Param注解，则会用注解的 value值替换参数名。
+   *
    * @param config 配置信息
    * @param method 要被分析的方法
    */

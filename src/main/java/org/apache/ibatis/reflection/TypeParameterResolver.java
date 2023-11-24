@@ -27,12 +27,14 @@ import java.util.Arrays;
 
 /**
  * @author Iwao AVE!
+ * 泛型参数解析器
  */
 public class TypeParameterResolver {
 
     /**
      * @return The field type as {@link Type}. If it has type parameters in the declaration,<br>
      *         they will be resolved to the actual runtime {@link Type}s.
+     *         解析属性的泛型
      */
     public static Type resolveFieldType(Field field, Type srcType) {
         // 返回属性的类型，如果是泛型，则为这次的实际类型
@@ -45,6 +47,7 @@ public class TypeParameterResolver {
     /**
      * @return The return type of the method as {@link Type}. If it has type parameters in the declaration,<br>
      *         they will be resolved to the actual runtime {@link Type}s.
+     *         解析方法返回值的泛型
      */
     public static Type resolveReturnType(Method method, Type srcType) {
         Type returnType = method.getGenericReturnType();
@@ -59,6 +62,7 @@ public class TypeParameterResolver {
 
     /**
      * 解析方法入参
+     * 解析方法输入参数的泛型
      * @param method 目标方法
      * @param srcType 目标方法所属的类
      * @return 解析结果
@@ -79,9 +83,19 @@ public class TypeParameterResolver {
 
     /**
      * 解析变量的实际类型
-     * @param type 变量的类型
-     * @param srcType 变量所属于的类
-     * @param declaringClass 定义变量的类
+     *
+     * public class User<T> {
+     *     public List<T> getInfo() {
+     *         return null;
+     *     }
+     * }
+     * public class Student extends User<Number> {
+     * }
+     *
+     *
+     * @param type 变量的类型 => 指要分析的字段或者参数的类型。这里我们要分析的是getInfo的输出参数，即“List”的类型。
+     * @param srcType 变量所属于的类 => 指要分析的字段或者参数所属的类。我们这里要分析的是 Student类中的getInfo方法，故所属的类是 Student类。
+     * @param declaringClass 定义变量的类 => 指定义要分析的字段或者参数的类。getInfo 方法在 User类中被定义，故这里是 User类。
      * @return 解析结果
      */
     private static Type resolveType(Type type, Type srcType, Class<?> declaringClass) {

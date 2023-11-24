@@ -20,6 +20,8 @@ import org.apache.ibatis.reflection.ReflectionException;
 
 /**
  * @author Clinton Begin
+ * ObjectWrapperFactory 是对象包装器工厂的接口，DefaultObjectWrapperFactory 是它的默认实现。不过该默认实现中并没有实现任何功能。
+ * MyBatis 也允许用户通过配置文件中的 objectWrapperFactory节点来注入新的ObjectWrapperFactory。
  */
 public class DefaultObjectWrapperFactory implements ObjectWrapperFactory {
 

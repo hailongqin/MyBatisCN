@@ -28,6 +28,7 @@ import java.lang.reflect.Type;
 
 /**
  * 用来处理泛型
+ * 类型参考器
  * @param <T>
  */
 public abstract class TypeReference<T> {
