@@ -27,7 +27,8 @@ import org.apache.ibatis.session.defaults.DefaultSqlSessionFactory;
 
 /**
  * Builds {@link SqlSession} instances.
- *
+ * SqlSessionFactoryBuilder是SqlSessionFactory的构造类，而SqlSessionFactory又是SqlSession的工厂接口，
+ * SqlSession从字面意思可知是sql会话接口；
  * @author Clinton Begin
  */
 public class SqlSessionFactoryBuilder {

@@ -21,6 +21,7 @@ import java.util.Map;
 
 /**
  * @author Clinton Begin
+ * 在 Enum中定义了所有的 JDBC类型，类型来源于 java.sql.Types。
  */
 public enum JdbcType {
   /*

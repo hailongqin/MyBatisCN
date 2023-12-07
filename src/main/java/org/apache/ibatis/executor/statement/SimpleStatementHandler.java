@@ -37,11 +37,13 @@ import org.apache.ibatis.session.RowBounds;
  */
 public class SimpleStatementHandler extends BaseStatementHandler {
 
+  // //构造方法执行父类的构造方法
   public SimpleStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
     // 调用BaseStatementHandler中的构造方法完成
     super(executor, mappedStatement, parameter, rowBounds, resultHandler, boundSql);
   }
 
+  //执行update操作
   @Override
   public int update(Statement statement) throws SQLException {
     // SQL语句
@@ -51,6 +53,7 @@ public class SimpleStatementHandler extends BaseStatementHandler {
     // 自增主键生成器
     KeyGenerator keyGenerator = mappedStatement.getKeyGenerator();
     int rows;
+    //最终都是执行statement的getUpdateCount方法
     if (keyGenerator instanceof Jdbc3KeyGenerator) {
       // 标明要返回自增主键
       statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
@@ -69,15 +72,18 @@ public class SimpleStatementHandler extends BaseStatementHandler {
     return rows;
   }
 
+  //给statement添加批量处理sql语句
   @Override
   public void batch(Statement statement) throws SQLException {
     String sql = boundSql.getSql();
     statement.addBatch(sql);
   }
 
+  //执行查询语句
   @Override
   public <E> List<E> query(Statement statement, ResultHandler resultHandler) throws SQLException {
     String sql = boundSql.getSql();
+    //statement.execute方法执行sql语句
     statement.execute(sql);
     return resultSetHandler.handleResultSets(statement);
   }
@@ -90,8 +96,10 @@ public class SimpleStatementHandler extends BaseStatementHandler {
   }
 
   // 从Connection中实例化Statement
+  //构造Statement对象
   @Override
   protected Statement instantiateStatement(Connection connection) throws SQLException {
+    //通过Connection来create一个Statement对象
     if (mappedStatement.getResultSetType() == ResultSetType.DEFAULT) {
       return connection.createStatement();
     } else {
@@ -99,6 +107,7 @@ public class SimpleStatementHandler extends BaseStatementHandler {
     }
   }
 
+  //由于SimpleStatementHandler是处理没有参数的SQL，所以参数设置的方法无需任何处理
   @Override
   public void parameterize(Statement statement) {
     // N/A

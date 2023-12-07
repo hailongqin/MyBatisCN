@@ -97,12 +97,17 @@ import org.apache.ibatis.type.UnknownTypeHandler;
  */
 public class MapperAnnotationBuilder {
 
+  //sql语句上的注解
   private static final Set<Class<? extends Annotation>> SQL_ANNOTATION_TYPES = new HashSet<>();
+  //指定类指定方法上的sql语句注解
   private static final Set<Class<? extends Annotation>> SQL_PROVIDER_ANNOTATION_TYPES = new HashSet<>();
 
+  // 全局配置对象
   private final Configuration configuration;
+  // Mapper构建助手类,组装解析出来的配置,生成Cache、ResultMap以及MappedStatement对象
   private final MapperBuilderAssistant assistant;
   // 要分析的类，即注解所在的类
+  // 解析的目标mapper接口的Class对象
   private final Class<?> type;
 
   static {
@@ -129,18 +134,24 @@ public class MapperAnnotationBuilder {
    * 解析包含注解的接口文档
    */
   public void parse() {
+    //mapper接口名,如：interface com.lucky.test.mapper.UserMapper
     String resource = type.toString();
     // 防止重复分析
+    //Configuration中Set<String> loadedResources 保存着已经加载过的mapper信息
+    //判断是否已经加载过
     if (!configuration.isResourceLoaded(resource)) {
       // 寻找类名对应的resource路径下是否有xml配置，如果有则解析掉。这样就支持注解和xml混合使用
+      //加载XML资源
       loadXmlResource();
       // 记录资源路径
+      //加载的resource添加到Configuration的loadedResources中
       configuration.addLoadedResource(resource);
       // 设置命名空间
       assistant.setCurrentNamespace(type.getName());
       // 处理缓存
       parseCache();
       parseCacheRef();
+      //遍历mapper的所有方法
       Method[] methods = type.getMethods();
       for (Method method : methods) {
         try {
@@ -181,8 +192,10 @@ public class MapperAnnotationBuilder {
     // to prevent loading again a resource twice
     // this flag is set at XMLMapperBuilder#bindMapperForNamespace
     if (!configuration.isResourceLoaded("namespace:" + type.getName())) {
+      //通过mapper接口名找到对应的mapper.xml路径
       String xmlResource = type.getName().replace('.', '/') + ".xml";
       // #1347
+      //读取mapper.xml文件流
       InputStream inputStream = type.getResourceAsStream("/" + xmlResource);
       if (inputStream == null) {
         // Search XML mapper that is not in the module but in the classpath.
@@ -193,7 +206,9 @@ public class MapperAnnotationBuilder {
         }
       }
       if (inputStream != null) {
+        //根据mapper.xml文件流创建XMLMapperBuilder对象
         XMLMapperBuilder xmlParser = new XMLMapperBuilder(inputStream, assistant.getConfiguration(), xmlResource, configuration.getSqlFragments(), type.getName());
+        //执行parse方法
         xmlParser.parse();
       }
     }

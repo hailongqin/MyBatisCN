@@ -20,6 +20,7 @@ import java.sql.Connection;
 /**
  * Creates an {@link SqlSession} out of a connection or a DataSource
  *
+ * 有两个实现类 DefaultSqlSessionFactory 和 SqlSessionManager
  * @author Clinton Begin
  */
 public interface SqlSessionFactory {

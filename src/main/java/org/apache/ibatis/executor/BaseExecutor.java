@@ -51,17 +51,23 @@ public abstract class BaseExecutor implements Executor {
 
   private static final Log log = LogFactory.getLog(BaseExecutor.class);
 
+  //事务
   protected Transaction transaction;
+  //执行器包装者
   protected Executor wrapper;
 
+  //线程安全队列
   protected ConcurrentLinkedQueue<DeferredLoad> deferredLoads;
   // 查询操作的结果缓存
+  //本地缓存
   protected PerpetualCache localCache;
   // Callable查询的输出参数缓存
   protected PerpetualCache localOutputParameterCache;
   protected Configuration configuration;
 
+  //查询次数栈
   protected int queryStack;
+  //是否已关闭(回滚的时候会被关闭)
   private boolean closed;
 
   protected BaseExecutor(Configuration configuration, Transaction transaction) {
@@ -178,25 +184,32 @@ public abstract class BaseExecutor implements Executor {
     ErrorContext.instance().resource(ms.getResource()).activity("executing a query").object(ms.getId());
     if (closed) {
       // 执行器已经关闭
+      //判断执行器是否已关闭
       throw new ExecutorException("Executor was closed.");
     }
+    //如果查询次数栈为0并且MappedStatement可以清除缓存,则清除本地缓存
     if (queryStack == 0 && ms.isFlushCacheRequired()) { // 新的查询栈且要求清除缓存
       // 清除一级缓存
       clearLocalCache();
     }
     List<E> list;
     try {
+      //查询次数+1
       queryStack++;
       // 尝试从本地缓存获取结果
+      //从缓存中根据缓存key查询是否有缓存
       list = resultHandler == null ? (List<E>) localCache.getObject(key) : null;
       if (list != null) {
         // 本地缓存中有结果，则对于CALLABLE语句还需要绑定到IN/INOUT参数上
+        // 如果缓存中有数据,则处理缓存
         handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
       } else {
         // 本地缓存没有结果，故需要查询数据库
+        // 如果缓存中没有数据,则从数据库查询数据
         list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
       }
     } finally {
+      //查询次数-1
       queryStack--;
     }
     if (queryStack == 0) {
@@ -384,14 +397,18 @@ public abstract class BaseExecutor implements Executor {
     // 向缓存中增加占位符，表示正在查询
     localCache.putObject(key, EXECUTION_PLACEHOLDER);
     try {
+      //执行doQuery方法
       list = doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
     } finally {
       // 删除占位符
       localCache.removeObject(key);
     }
+    //将查询结果放入缓存
     // 将查询结果写入缓存
     localCache.putObject(key, list);
+    //如果callable类型查询
     if (ms.getStatementType() == StatementType.CALLABLE) {
+      //将参数放入缓存中
       localOutputParameterCache.putObject(key, parameter);
     }
     return list;

@@ -47,16 +47,20 @@ import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.type.JdbcType;
 
 /**
+ * mybatis的XML配置的构造类，负责构造mybatis的XML配置的。
+ *
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
 public class XMLConfigBuilder extends BaseBuilder {
 
   // 存储是否已经对config文件完成解析
+  // 解析标识,因为Configuration是全局变量，只需要解析创建一次即可，true表示已经解析创建过,false则表示没有
   private boolean parsed;
   // 解析器
   private final XPathParser parser;
   // 要读取哪一个Environment节点，这里存储节点名
+  // 环境参数
   private String environment;
   // 反射工厂
   private final ReflectorFactory localReflectorFactory = new DefaultReflectorFactory();
@@ -86,6 +90,7 @@ public class XMLConfigBuilder extends BaseBuilder {
   }
 
   private XMLConfigBuilder(XPathParser parser, String environment, Properties props) {
+    // 调用父类的构造方法
     super(new Configuration());
     ErrorContext.instance().resource("SQL Mapper Configuration");
     this.configuration.setVariables(props);
@@ -100,17 +105,20 @@ public class XMLConfigBuilder extends BaseBuilder {
    */
   public Configuration parse() {
     // 不允许重复解析
+    // 判断Configuration是否解析过，Configuration是全局变量，只需要解析创建一次即可
     if (parsed) {
       throw new BuilderException("Each XMLConfigBuilder can only be used once.");
     }
     parsed = true;
     // 从根节点开展解析
+    //调用下面的方法,parser.evalNode("/configuration")解析XML配置的configuration节点的内容，得到XNode对象
     parseConfiguration(parser.evalNode("/configuration"));
     return configuration;
   }
 
   /**
    * 从根节点configuration开始解析下层节点
+   * 根据root中存储的是configuration节点的内容
    * @param root 根节点configuration节点
    */
   private void parseConfiguration(XNode root) {
@@ -118,19 +126,29 @@ public class XMLConfigBuilder extends BaseBuilder {
       // 解析信息放入Configuration
       // 首先解析properties，以保证在解析其他节点时便可以生效
       propertiesElement(root.evalNode("properties"));
+      // 设置settings配置
       Properties settings = settingsAsProperties(root.evalNode("settings"));
       loadCustomVfs(settings);
       loadCustomLogImpl(settings);
+      // 设置typeAliases配置
       typeAliasesElement(root.evalNode("typeAliases"));
+      // 设置plugins配置
       pluginElement(root.evalNode("plugins"));
+      // 设置objectFactory配置
       objectFactoryElement(root.evalNode("objectFactory"));
+      // 设置objectWrapperFactory配置
       objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
+      // 设置reflectFactory配置
       reflectorFactoryElement(root.evalNode("reflectorFactory"));
       settingsElement(settings);
       // read it after objectFactory and objectWrapperFactory issue #631
+      // 设置environments配置
       environmentsElement(root.evalNode("environments"));
+      // 设置databaseIdProvider配置
       databaseIdProviderElement(root.evalNode("databaseIdProvider"));
+      // 设置typeHandlers配置
       typeHandlerElement(root.evalNode("typeHandlers"));
+      // 设置mappers配置
       mapperElement(root.evalNode("mappers"));
     } catch (Exception e) {
       throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
@@ -410,17 +428,21 @@ public class XMLConfigBuilder extends BaseBuilder {
    * @throws Exception
    */
   private void mapperElement(XNode parent) throws Exception {
-
+    // parent是Configuration配置文件中的<mappers>标签
     if (parent != null) {
+      //遍历<mappers>标签下的所有子标签
       for (XNode child : parent.getChildren()) {
+        //加载package包下的所有mapper
         // 处理mappers的子节点，即mapper节点或者package节点
         if ("package".equals(child.getName())) { // package节点
           // 取出包的路径
           String mapperPackage = child.getStringAttribute("name");
           // 全部加入Mappers中
+          // 加载packege包下的所有mapper
           configuration.addMappers(mapperPackage);
         } else {
           // resource、url、class这三个属性只有一个生效
+          //按resource或url或class加载单个mapper
           String resource = child.getStringAttribute("resource");
           String url = child.getStringAttribute("url");
           String mapperClass = child.getStringAttribute("class");
@@ -430,6 +452,7 @@ public class XMLConfigBuilder extends BaseBuilder {
             InputStream inputStream = Resources.getResourceAsStream(resource);
             // 使用XMLMapperBuilder解析Mapper文件
             XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
+            //解析xml文件流
             mapperParser.parse();
           } else if (resource == null && url != null && mapperClass == null) {
             ErrorContext.instance().resource(url);
@@ -437,10 +460,12 @@ public class XMLConfigBuilder extends BaseBuilder {
             InputStream inputStream = Resources.getUrlAsStream(url);
             // 使用XMLMapperBuilder解析Mapper文件
             XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, url, configuration.getSqlFragments());
+            //解析xml文件流
             mapperParser.parse();
           } else if (resource == null && url == null && mapperClass != null) {
             // 配置的不是Mapper文件，而是Mapper接口
             Class<?> mapperInterface = Resources.classForName(mapperClass);
+            //加载指定接口的mapper
             configuration.addMapper(mapperInterface);
           } else {
             throw new BuilderException("A mapper element may only specify a url, resource or class, but not more than one.");

@@ -111,16 +111,22 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 public class Configuration {
 
   // <environment>节点的信息
+  // 运行环境
   protected Environment environment;
 
   // 以下为<settings>节点中的配置信息
   protected boolean safeRowBoundsEnabled;
   protected boolean safeResultHandlerEnabled = true;
   protected boolean mapUnderscoreToCamelCase;
+  //true：有延迟加载属性的对象被调用时完全加载任意属性;false：每个属性按需要加载
   protected boolean aggressiveLazyLoading;
+  //是否允许多种结果集从一个单独的语句中返回
   protected boolean multipleResultSetsEnabled = true;
+  //是否支持自动生成主键
   protected boolean useGeneratedKeys;
+  //是否使用列标签
   protected boolean useColumnLabel = true;
+  //是否使用缓存标识
   protected boolean cacheEnabled = true;
   protected boolean callSettersOnNulls;
   protected boolean useActualParamName = true;
@@ -136,6 +142,7 @@ public class Configuration {
   protected Integer defaultFetchSize;
   protected ResultSetType defaultResultSetType;
   protected ExecutorType defaultExecutorType = ExecutorType.SIMPLE;
+  //指定mybatis如果自动映射列到字段和属性,PARTIAL会自动映射简单的没有嵌套的结果,FULL会自动映射任意复杂的结果
   protected AutoMappingBehavior autoMappingBehavior = AutoMappingBehavior.PARTIAL;
   protected AutoMappingUnknownColumnBehavior autoMappingUnknownColumnBehavior = AutoMappingUnknownColumnBehavior.NONE;
   // 以上为<settings>节点中的配置信息
@@ -149,6 +156,7 @@ public class Configuration {
   // 对象包装工厂
   protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
   // 是否启用懒加载，该配置来自<settings>节点
+  //是否延时加载，false则表示所有关联对象即使加载,true表示延时加载
   protected boolean lazyLoadingEnabled = false;
   // 代理工厂
   protected ProxyFactory proxyFactory = new JavassistProxyFactory(); // #224 Using internal Javassist instead of OGNL
@@ -179,6 +187,7 @@ public class Configuration {
   // 主键生成器映射
   protected final Map<String, KeyGenerator> keyGenerators = new StrictMap<>("Key Generators collection");
   // 载入的资源，例如映射文件资源
+  //已经加载过的resource(mapper)
   protected final Set<String> loadedResources = new HashSet<>();
   // SQL语句片段，即所有的<sql>节点
   protected final Map<String, XNode> sqlFragments = new StrictMap<>("XML fragments parsed from previous mappers");
@@ -810,6 +819,7 @@ public class Configuration {
     mapperRegistry.addMappers(packageName);
   }
 
+  //加载指定接口的mapper
   public <T> void addMapper(Class<T> type) {
     mapperRegistry.addMapper(type);
   }

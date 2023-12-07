@@ -49,6 +49,10 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     try {
+      //判断执行的方法是否是来自父类Object类的方法,也就是如toString、hashCode等方法
+      //如果是则直接通过反射执行该方法,如果不是Object的方法则再往下走,如果不加这个判断会发生什么呢？
+      //由于mapper接口除了定义的接口方法还包括继承于Object的方法,如果不加判断则会继续往下走,而下面的执行过程是从mapper.xml寻找对应的实现方法，
+      //由于mapper.xml只实现了mapper中的接口方法,而没有toString和hashCode方法，从而就会导致这些方法无法被实现。
       if (Object.class.equals(method.getDeclaringClass())) { // 继承自Object的方法
         // 直接执行原有方法
         return method.invoke(this, args);
@@ -62,10 +66,13 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
     // 找对对应的MapperMethod对象
     final MapperMethod mapperMethod = cachedMapperMethod(method);
     // 调用MapperMethod中的execute方法
+    // 执行mapperMethod对象的execute方法
     return mapperMethod.execute(sqlSession, args);
   }
 
   private MapperMethod cachedMapperMethod(Method method) {
+    //从缓存中根据method对象获取MapperMethod对象
+    //如果mapperMethod为空则新建MapperMethod方法
     return methodCache.computeIfAbsent(method, k -> new MapperMethod(mapperInterface, method, sqlSession.getConfiguration()));
   }
 

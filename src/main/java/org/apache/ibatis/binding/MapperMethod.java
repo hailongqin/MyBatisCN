@@ -73,28 +73,39 @@ public class MapperMethod {
   public Object execute(SqlSession sqlSession, Object[] args) {
     Object result;
     switch (command.getType()) { // 根据SQL语句类型，执行不同操作
+      //如果执行insert命令
       case INSERT: { // 如果是插入语句
         // 将参数顺序与实参对应好
+        // 构建参数
         Object param = method.convertArgsToSqlCommandParam(args);
         // 执行操作并返回结果
+        //调用sqlSession的insert方法
         result = rowCountResult(sqlSession.insert(command.getName(), param));
         break;
       }
+      //如果执行update命令
       case UPDATE: { // 如果是更新语句
         // 将参数顺序与实参对应好
+        // 构建参数
         Object param = method.convertArgsToSqlCommandParam(args);
         // 执行操作并返回结果
+        //调用sqlSession的update方法
         result = rowCountResult(sqlSession.update(command.getName(), param));
         break;
       }
+      //如果执行delete命令
       case DELETE: { // 如果是删除语句MappedStatement
         // 将参数顺序与实参对应好
+        // 构建参数
         Object param = method.convertArgsToSqlCommandParam(args);
         // 执行操作并返回结果
+        //调用sqlSession的delete方法
         result = rowCountResult(sqlSession.delete(command.getName(), param));
         break;
       }
+      //如果执行select命令
       case SELECT: // 如果是查询语句
+        //判断接口返回类型，更加返回数据类型执行对应的select语句
         if (method.returnsVoid() && method.hasResultHandler()) { // 方法返回值为void，且有结果处理器
           // 使用结果处理器执行查询
           executeWithResultHandler(sqlSession, args);
@@ -262,7 +273,9 @@ public class MapperMethod {
               + mapperInterface.getName() + "." + methodName);
         }
       } else {
+        //设置name为MappedStatement的id，而id的值就是xml中对应的sql语句
         name = ms.getId();
+        //设置type为MappedStatement的sql类型
         type = ms.getSqlCommandType();
         if (type == SqlCommandType.UNKNOWN) {
           throw new BindingException("Unknown execution method for: " + name);
@@ -289,16 +302,19 @@ public class MapperMethod {
     private MappedStatement resolveMappedStatement(Class<?> mapperInterface, String methodName,
         Class<?> declaringClass, Configuration configuration) {
       // 数据库操作语句的编号是：接口名.方法名
+      // 接口方法名
       String statementId = mapperInterface.getName() + "." + methodName;
       // configuration保存了解析后的所有操作语句，去查找该语句
       if (configuration.hasStatement(statementId)) {
         // 从configuration中找到了对应的语句，返回
+        //从configuration中根据接口名获取MappedStatement对象
         return configuration.getMappedStatement(statementId);
       } else if (mapperInterface.equals(declaringClass)) {
         // 说明递归调用已经到终点，但是仍然没有找到匹配的结果
         return null;
       }
       // 从方法的定义类开始，沿着父类向上寻找。找到接口类时停止
+      //如果该方法不是该mapper接口的方法,则从mapper的父类中找寻该接口对应的MappedStatement对象
       for (Class<?> superInterface : mapperInterface.getInterfaces()) {
         if (declaringClass.isAssignableFrom(superInterface)) {
           MappedStatement ms = resolveMappedStatement(superInterface, methodName,

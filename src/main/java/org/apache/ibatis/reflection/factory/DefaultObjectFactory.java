@@ -35,6 +35,7 @@ import org.apache.ibatis.reflection.Reflector;
 
 /**
  * @author Clinton Begin
+ * ObjectFactory的默认实现。
  */
 public class DefaultObjectFactory implements ObjectFactory, Serializable {
 
@@ -45,6 +46,14 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
     return create(type, null, null);
   }
 
+  /**
+   * 创建类的实例
+   * @param type Object type 要创建实例的类
+   * @param constructorArgTypes Constructor argument types 构造方法入参类型
+   * @param constructorArgs Constructor argument values 构造方法入参
+   * @param <T> 实例类型
+   * @return 创建的实例
+   */
   @SuppressWarnings("unchecked")
   @Override
   public <T> T create(Class<T> type, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
@@ -110,6 +119,7 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
 
   // 判断要创建的目标对象的类型，即如果传入的是接口则给出它的一种实现
   protected Class<?> resolveInterface(Class<?> type) {
+    // 构造方法
     Class<?> classToCreate;
     if (type == List.class || type == Collection.class || type == Iterable.class) {
       classToCreate = ArrayList.class;

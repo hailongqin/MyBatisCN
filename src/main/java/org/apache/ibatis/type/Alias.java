@@ -23,6 +23,9 @@ import java.lang.annotation.Target;
 
 /**
  * @author Clinton Begin
+ *
+ * 使用该注解可以给类设置别名，设置后，别名和类型的映射关系便存入TypeAliasRegistry中；
+ *
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

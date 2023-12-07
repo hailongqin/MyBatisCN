@@ -17,6 +17,9 @@ package org.apache.ibatis.type;
 
 /**
  * @author Clinton Begin
+ *
+ * 提供数组转化的工具方法。
+ *
  */
 class ByteArrayUtils {
 

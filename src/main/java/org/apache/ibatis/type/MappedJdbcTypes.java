@@ -23,6 +23,8 @@ import java.lang.annotation.Target;
 
 /**
  * @author Eduardo Macarron
+ *
+ * 有时我们想使用自己的处理器来处理某些 JDBC 类型，只需创建 BaseTypeHandler 的子类，然后在上面加上该注解，声明它要处理的JDBC类型即可；
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

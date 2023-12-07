@@ -87,20 +87,27 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   public XMLMapperBuilder(InputStream inputStream, Configuration configuration, String resource, Map<String, XNode> sqlFragments, String namespace) {
+    //调用下面一个构造方法
     this(inputStream, configuration, resource, sqlFragments);
     this.builderAssistant.setCurrentNamespace(namespace);
   }
 
   public XMLMapperBuilder(InputStream inputStream, Configuration configuration, String resource, Map<String, XNode> sqlFragments) {
+    //调用下面一个构造方法
     this(new XPathParser(inputStream, true, configuration.getVariables(), new XMLMapperEntityResolver()),
         configuration, resource, sqlFragments);
   }
 
   private XMLMapperBuilder(XPathParser parser, Configuration configuration, String resource, Map<String, XNode> sqlFragments) {
+    //对自己的属性进行赋值
     super(configuration);
+    //mapper构造者助手
     this.builderAssistant = new MapperBuilderAssistant(configuration, resource);
+    //XML解析类
     this.parser = parser;
+    //sql片段集合
     this.sqlFragments = sqlFragments;
+    //mapper名称
     this.resource = resource;
   }
 
@@ -111,10 +118,13 @@ public class XMLMapperBuilder extends BaseBuilder {
     // 该节点是否被解析过
     if (!configuration.isResourceLoaded(resource)) {
       // 处理mapper节点
+      //从XML解析类中获取mapper标签的内容
       configurationElement(parser.evalNode("/mapper"));
       // 加入到已经解析的列表，防止重复解析
+      //将加载过的resource添加到Configuration中
       configuration.addLoadedResource(resource);
       // 将mapper注册给Configuration
+      //绑定mapper到对应mapper的命名空间中
       bindMapperForNamespace();
     }
 
@@ -135,18 +145,25 @@ public class XMLMapperBuilder extends BaseBuilder {
   private void configurationElement(XNode context) {
     try {
       // 读取当前Mapper文件的命名空间
+      //从xml中获取namespace标签内容
       String namespace = context.getStringAttribute("namespace");
       if (namespace == null || namespace.equals("")) {
         throw new BuilderException("Mapper's namespace cannot be empty");
       }
       builderAssistant.setCurrentNamespace(namespace);
       // mapper文件中其他配置节点的解析
+      //获取cache-ref标签内容
       cacheRefElement(context.evalNode("cache-ref"));
+      //获取cache标签内容
       cacheElement(context.evalNode("cache"));
+      //获取parameterMap内容
       parameterMapElement(context.evalNodes("/mapper/parameterMap"));
+      //获取resultMap内容
       resultMapElements(context.evalNodes("/mapper/resultMap"));
+      //获取sql标签内容
       sqlElement(context.evalNodes("/mapper/sql"));
       // 处理各个数据库操作语句
+      //解析获取各种sql语句标签内容
       buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
     } catch (Exception e) {
       throw new BuilderException("Error parsing Mapper XML. The XML location is '" + resource + "'. Cause: " + e, e);

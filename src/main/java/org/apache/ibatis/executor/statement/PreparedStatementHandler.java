@@ -37,10 +37,12 @@ import org.apache.ibatis.session.RowBounds;
  */
 public class PreparedStatementHandler extends BaseStatementHandler {
 
+  //执行父类构造方法
   public PreparedStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
     super(executor, mappedStatement, parameter, rowBounds, resultHandler, boundSql);
   }
 
+  //执行update操作
   @Override
   public int update(Statement statement) throws SQLException {
     PreparedStatement ps = (PreparedStatement) statement;
@@ -56,12 +58,14 @@ public class PreparedStatementHandler extends BaseStatementHandler {
     return rows;
   }
 
+  //给preparedStatement对象添加批量处理sql语句
   @Override
   public void batch(Statement statement) throws SQLException {
     PreparedStatement ps = (PreparedStatement) statement;
     ps.addBatch();
   }
 
+  //执行preparedStatement的查询语句
   @Override
   public <E> List<E> query(Statement statement, ResultHandler resultHandler) throws SQLException {
     PreparedStatement ps = (PreparedStatement) statement;
@@ -78,6 +82,7 @@ public class PreparedStatementHandler extends BaseStatementHandler {
     return resultSetHandler.handleCursorResultSets(ps);
   }
 
+  //构建Statement的子类PreparedStatement对象
   @Override
   protected Statement instantiateStatement(Connection connection) throws SQLException {
     String sql = boundSql.getSql();
@@ -95,6 +100,7 @@ public class PreparedStatementHandler extends BaseStatementHandler {
     }
   }
 
+  //给Statement对象设置参数
   @Override
   public void parameterize(Statement statement) throws SQLException {
     parameterHandler.setParameters((PreparedStatement) statement);

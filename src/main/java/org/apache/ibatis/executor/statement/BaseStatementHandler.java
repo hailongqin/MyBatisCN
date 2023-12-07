@@ -42,18 +42,26 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
  */
 public abstract class BaseStatementHandler implements StatementHandler {
 
+  //全局配置
   protected final Configuration configuration;
+  //对象工厂
   protected final ObjectFactory objectFactory;
   protected final TypeHandlerRegistry typeHandlerRegistry;
+  //结果集处理器
   protected final ResultSetHandler resultSetHandler;
+  //参数处理器
   protected final ParameterHandler parameterHandler;
 
+  //执行器
   protected final Executor executor;
+  //mapper的SQL对象
   protected final MappedStatement mappedStatement;
+  //分页参数
   protected final RowBounds rowBounds;
-
+  //sql封装对象
   protected BoundSql boundSql;
 
+  //构造方法
   protected BaseStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
     this.configuration = mappedStatement.getConfiguration();
     this.executor = executor;
@@ -76,24 +84,30 @@ public abstract class BaseStatementHandler implements StatementHandler {
     this.resultSetHandler = configuration.newResultSetHandler(executor, mappedStatement, rowBounds, parameterHandler, resultHandler, boundSql);
   }
 
+  //返回boundSql
   @Override
   public BoundSql getBoundSql() {
     return boundSql;
   }
 
+  //返回parameterHandler
   @Override
   public ParameterHandler getParameterHandler() {
     return parameterHandler;
   }
 
   // 从连接中获取一个Statement，并设置事务超时时间
+  //预编译SQL语句
   @Override
   public Statement prepare(Connection connection, Integer transactionTimeout) throws SQLException {
     ErrorContext.instance().sql(boundSql.getSql());
     Statement statement = null;
     try {
+      //调用抽象方法构建statement对象是，但是没有具体实现，而是交给其子类去实现
       statement = instantiateStatement(connection);
+      //设置statement超时时间
       setStatementTimeout(statement, transactionTimeout);
+      //设置statement的fetchSize
       setFetchSize(statement);
       return statement;
     } catch (SQLException e) {
@@ -109,6 +123,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
   protected abstract Statement instantiateStatement(Connection connection) throws SQLException;
 
   // 设置查询超时时间
+  //给statement对象设置timeout
   protected void setStatementTimeout(Statement stmt, Integer transactionTimeout) throws SQLException {
     Integer queryTimeout = null;
     if (mappedStatement.getTimeout() != null) {
@@ -123,6 +138,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
   }
 
   // 获取数据大小限制
+  //给statement对象设置fetchSize
   protected void setFetchSize(Statement stmt) throws SQLException {
     Integer fetchSize = mappedStatement.getFetchSize();
     if (fetchSize != null) {
@@ -135,6 +151,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
     }
   }
 
+  //关闭statement
   protected void closeStatement(Statement statement) {
     try {
       if (statement != null) {
@@ -146,6 +163,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
   }
 
   // 前置自增主键的生成
+  //根据参数对象生成key
   protected void generateKeys(Object parameter) {
     KeyGenerator keyGenerator = mappedStatement.getKeyGenerator();
     ErrorContext.instance().store();

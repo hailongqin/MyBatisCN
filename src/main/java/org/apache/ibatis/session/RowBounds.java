@@ -17,10 +17,13 @@ package org.apache.ibatis.session;
 
 /**
  * @author Clinton Begin
+ *
+ * 分页相关的参数
  */
 public class RowBounds {
 
   public static final int NO_ROW_OFFSET = 0;
+  // int的最大值
   public static final int NO_ROW_LIMIT = Integer.MAX_VALUE;
   public static final RowBounds DEFAULT = new RowBounds();
 

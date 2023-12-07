@@ -37,6 +37,7 @@ public class MapperRegistry {
 
   private final Configuration config;
   // 已知的所有映射
+  // 已注册的mapper集合
   // key:mapperInterface,即dao的数据库接口，不是方法
   // value:MapperProxyFactory,即映射器代理工厂
   private final Map<Class<?>, MapperProxyFactory<?>> knownMappers = new HashMap<>();
@@ -55,22 +56,35 @@ public class MapperRegistry {
   @SuppressWarnings("unchecked")
   public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
     // 找出指定映射接口的代理工厂
+    // 从konwMappers获取MapperProxyFactory对象
     final MapperProxyFactory<T> mapperProxyFactory = (MapperProxyFactory<T>) knownMappers.get(type);
     if (mapperProxyFactory == null) {
       throw new BindingException("Type " + type + " is not known to the MapperRegistry.");
     }
     try {
       // 通过mapperProxyFactory给出对应代理器的实例
+      // 通过mapper代理工厂创建新实例
       return mapperProxyFactory.newInstance(sqlSession);
     } catch (Exception e) {
       throw new BindingException("Error getting mapper instance. Cause: " + e, e);
     }
   }
 
+  /**
+   * 判断指定mapper是否已经存在
+   * @param type
+   * @param <T>
+   * @return
+   */
   public <T> boolean hasMapper(Class<T> type) {
     return knownMappers.containsKey(type);
   }
 
+  /**
+   * 新增一个mapper
+   * @param type
+   * @param <T>
+   */
   public <T> void addMapper(Class<T> type) {
     // 要加入的肯定是接口，否则不添加
     if (type.isInterface()) {
@@ -81,6 +95,7 @@ public class MapperRegistry {
       }
       boolean loadCompleted = false;
       try {
+        //加载指定的mapper接口
         knownMappers.put(type, new MapperProxyFactory<>(type));
         // It's important that the type is added before the parser is run
         // otherwise the binding may automatically be attempted by the
@@ -97,6 +112,7 @@ public class MapperRegistry {
   }
 
   /**
+   * 获取所有mapper集合
    * @since 3.2.2
    */
   public Collection<Class<?>> getMappers() {
@@ -104,6 +120,7 @@ public class MapperRegistry {
   }
 
   /**
+   * 根据package名称加载包下所有的mapper
    * @since 3.2.2
    */
   public void addMappers(String packageName, Class<?> superType) {
@@ -119,6 +136,7 @@ public class MapperRegistry {
   }
 
   /**
+   * 根据package批量加载mapper
    * @since 3.2.2
    */
   public void addMappers(String packageName) {

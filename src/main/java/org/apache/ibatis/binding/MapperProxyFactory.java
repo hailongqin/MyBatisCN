@@ -51,10 +51,12 @@ public class MapperProxyFactory<T> {
   protected T newInstance(MapperProxy<T> mapperProxy) {
     // 三个参数分别是：
     // 创建代理对象的类加载器、要代理的接口、代理类的处理器（即具体的实现）。
+    //通过代理获取mapper接口的新实例
     return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(), new Class[] { mapperInterface }, mapperProxy);
   }
 
   public T newInstance(SqlSession sqlSession) {
+    //创建mapper代理对象,调用newInstance方法
     final MapperProxy<T> mapperProxy = new MapperProxy<>(sqlSession, mapperInterface, methodCache);
     return newInstance(mapperProxy);
   }

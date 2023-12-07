@@ -43,14 +43,20 @@ import org.apache.ibatis.session.SqlSession;
  * The default implementation for {@link SqlSession}.
  * Note that this class is not Thread-Safe.
  *
+ *   由此可得出结论sqlSession虽然叫程序和数据库之间的SQL会话，但是它并没有具体去执行sql语句，
+ *   最终的sql语句的执行是由执行器Executor执行的，
+ *   而SqlSession的作用只是创建了MappedStatement对象以及调用执行器去执行SQL。
+ *
  * @author Clinton Begin
  */
 public class DefaultSqlSession implements SqlSession {
   // 配置信息
+  // 全局配置
   private final Configuration configuration;
   // 执行器
   private final Executor executor;
   // 是否自动提交
+  // 自动提交标识
   private final boolean autoCommit;
   // 缓存是否已经被污染
   private boolean dirty;
