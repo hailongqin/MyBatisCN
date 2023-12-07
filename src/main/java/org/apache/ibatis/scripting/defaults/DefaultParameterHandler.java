@@ -53,13 +53,14 @@ public class DefaultParameterHandler implements ParameterHandler {
     this.mappedStatement = mappedStatement;
     this.configuration = mappedStatement.getConfiguration();
     this.typeHandlerRegistry = mappedStatement.getConfiguration().getTypeHandlerRegistry();
+    //设置参数
     this.parameterObject = parameterObject;
     this.boundSql = boundSql;
   }
 
   @Override
   public Object getParameterObject() {
-    return parameterObject;
+    return parameterObject; //返回参数
   }
 
   /**
@@ -70,8 +71,10 @@ public class DefaultParameterHandler implements ParameterHandler {
   public void setParameters(PreparedStatement ps) {
     ErrorContext.instance().activity("setting parameters").object(mappedStatement.getParameterMap().getId());
     // 取出参数列表
+    //获取所有参数，ParameterMapping是jdbc和java类型之间的对应关系
     List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
     if (parameterMappings != null) {
+      //遍历所有参数，将java 类型设置成jdbc类型
       for (int i = 0; i < parameterMappings.size(); i++) {
         ParameterMapping parameterMapping = parameterMappings.get(i);
         // ParameterMode.OUT是CallableStatement的输出参数，已经单独注册。故忽略

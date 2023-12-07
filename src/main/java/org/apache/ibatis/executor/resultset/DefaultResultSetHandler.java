@@ -201,23 +201,31 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   public List<Object> handleResultSets(Statement stmt) throws SQLException {
     ErrorContext.instance().activity("handling results").object(mappedStatement.getId());
     // 用以存储处理结果的列表
+    //定义返回结果的List
     final List<Object> multipleResults = new ArrayList<>();
     // 可能会有多个结果集，该变量用来对结果集进行计数
+    //定义结果长度
     int resultSetCount = 0;
     // 可能会有多个结果集，先取出第一个结果集
+    //获取第一个结果集
     ResultSetWrapper rsw = getFirstResultSet(stmt);
     // 查询语句对应的resultMap节点，可能含有多个
+    // 获取结果集合
     List<ResultMap> resultMaps = mappedStatement.getResultMaps();
+    //一般结果集合只有1个
     int resultMapCount = resultMaps.size();
     // 合法性校验（存在输出结果集的情况下，resultMapCount不能为0）
     validateResultMapsCount(rsw, resultMapCount);
     // 循环遍历每一个设置了resultMap的结果集
     while (rsw != null && resultMapCount > resultSetCount) {
       // 获得当前结果集对应的resultMap
+      // 获取第一个结果集合
       ResultMap resultMap = resultMaps.get(resultSetCount);
       // 进行结果集的处理
+      // 处理结果映射，将数据存放到list中
       handleResultSet(rsw, resultMap, multipleResults, null);
       // 获取下一结果集
+      // 取下一个结果集合重复操作
       rsw = getNextResultSet(stmt);
       // 清理上一条结果集的环境
       cleanUpAfterHandlingResultSet();
